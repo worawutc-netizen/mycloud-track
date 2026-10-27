@@ -1,0 +1,416 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><title>Proactive Tracking CS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centered tool column — brand bar, search console, live result rows, recent history */
+:root {
+  --teal: #00AAAD;
+  --teal-deep: #008B8E;
+  --mint: #1EE3A0;
+  --ink: #222222;
+  --muted: #4F4F4F;
+  --line: #DCDFE5;
+  --bg: #F2F5F5;
+  --surface: #FFFFFF;
+  --chip: #E6F6F6;
+  --post: #E2231A;
+  --post-soft: #FDECEB;
+  --dhl: #D40511;
+  --dhl-bg: #FFCC00;
+  --tp: #5B3FD9;
+  --tp-bg: #ECE8FD;
+  --focus: rgba(0,170,173,.35);
+  --shadow: 0 1px 2px rgba(16,40,40,.06), 0 8px 24px rgba(16,40,40,.06);
+  --font: "IBM Plex Sans Thai", Tahoma, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --teal: #2CC6C8; --teal-deep: #5ED8DA; --mint: #3BEFB0; --ink: #ECF1F1; --muted: #A9B6B6; --line: #2E3A3B;
+    --bg: #111818; --surface: #182222; --chip: #133334; --post: #FF6B63; --post-soft: #3A1C1B;
+    --focus: rgba(44,198,200,.4); --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --tp: #B3A3FF; --tp-bg: #2A2350;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --teal: #2CC6C8; --teal-deep: #5ED8DA; --mint: #3BEFB0; --ink: #ECF1F1; --muted: #A9B6B6; --line: #2E3A3B;
+  --bg: #111818; --surface: #182222; --chip: #133334; --post: #FF6B63; --post-soft: #3A1C1B;
+  --focus: rgba(44,198,200,.4); --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  --tp: #B3A3FF; --tp-bg: #2A2350;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 20px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 20px 4px; flex-wrap: wrap; }
+.logo { display: inline-flex; background: #FFFFFF; border-radius: 10px; padding: 8px 12px; }
+.logo img { height: 30px; width: auto; display: block; }
+.tag { font-size: 13px; color: var(--muted); }
+
+.hero h1 { margin: 0; font-size: clamp(26px, 5vw, 34px); font-weight: 700; line-height: 1.2; text-wrap: balance; }
+.hero h1 span {
+  background: linear-gradient(90deg, var(--teal), var(--mint)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero p { margin: 6px 0 0; color: var(--muted); }
+
+.console {
+  background: var(--surface); border: 1px solid var(--line); border-top: 4px solid transparent; border-radius: 16px; padding: 18px;
+  box-shadow: var(--shadow); display: grid; gap: 14px;
+  background-image: linear-gradient(var(--surface), var(--surface)), linear-gradient(90deg, var(--teal), var(--mint));
+  background-origin: border-box; background-clip: padding-box, border-box;
+}
+.field { display: flex; gap: 10px; }
+.field textarea {
+  flex: 1; min-width: 0; resize: vertical; min-height: 56px; max-height: 240px;
+  font: 500 19px/1.5 var(--mono); letter-spacing: .02em; color: var(--ink); background: var(--surface);
+  border: 2px solid var(--teal); border-radius: 14px; padding: 15px 16px; outline: none;
+  box-shadow: 0 0 0 4px var(--chip), 0 6px 18px rgba(0,170,173,.18); transition: border-color .15s, box-shadow .15s;
+}
+.field textarea::placeholder { font-family: var(--font); font-weight: 500; font-size: 15px; letter-spacing: 0; color: var(--teal-deep); opacity: .75; }
+.field textarea:focus { border-color: var(--mint); box-shadow: 0 0 0 5px var(--focus), 0 8px 24px rgba(0,170,173,.28); }
+.btn {
+  font: 600 15px var(--font); border: 0; border-radius: 12px; cursor: pointer; padding: 0 20px; min-height: 56px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; white-space: nowrap;
+  transition: transform .08s, filter .15s, background .15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.btn-go {
+  background: linear-gradient(135deg, var(--teal) 0%, #10C9A4 100%); color: #FFFFFF; font-size: 17px; padding: 0 26px;
+  box-shadow: 0 6px 18px rgba(0,170,173,.35);
+}
+.btn-go:hover { filter: brightness(1.08); box-shadow: 0 8px 22px rgba(0,170,173,.45); }
+.hint { font-size: 13px; color: var(--muted); display: flex; gap: 6px 14px; flex-wrap: wrap; }
+.hint kbd { font: 500 12px var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--bg); }
+
+.groups { display: grid; gap: 14px; }
+.group-h { display: flex; align-items: baseline; gap: 8px; margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.group-h .pill { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--teal-deep); background: var(--chip); padding: 2px 8px; border-radius: 999px; }
+.group-h small { font-weight: 400; color: var(--muted); }
+.carriers { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.carrier {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line);
+  background: var(--surface); color: var(--ink); text-decoration: none; cursor: pointer; font: inherit; text-align: left;
+  transition: border-color .15s, background .15s;
+}
+.carrier:hover { border-color: var(--teal); }
+.carrier:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.carrier b { display: block; font-size: 15px; }
+.carrier small { display: block; font-size: 12px; color: var(--muted); }
+.mark { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; font-size: 13px; letter-spacing: .02em; }
+.mark.post { background: var(--post-soft); color: var(--post); }
+.mark.dhl, .mark.express { background: var(--dhl-bg); color: var(--dhl); font-style: italic; font-size: 14px; }
+.mark.express { box-shadow: inset 0 -4px 0 var(--dhl); }
+.mark.epacket { background: var(--post); color: #FFFFFF; font-size: 11px; }
+.mark.teleport { background: var(--tp-bg); color: var(--tp); font-size: 15px; }
+
+.section-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 8px; }
+.section-h h2 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.link-btn { font: 500 13px var(--font); background: none; border: 0; color: var(--teal-deep); cursor: pointer; padding: 4px; }
+.link-btn:focus-visible { outline: 2px solid var(--focus); border-radius: 4px; }
+
+.list { display: grid; gap: 8px; }
+.row {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+}
+.row .num { font: 500 15px var(--mono); letter-spacing: .02em; overflow-wrap: anywhere; min-width: 0; }
+.row .meta { display: block; font: 400 12px var(--font); color: var(--muted); letter-spacing: 0; }
+.row .mark { width: 34px; height: 34px; font-size: 11px; border-radius: 8px; }
+.row .mark.dhl { font-size: 12px; }
+.actions { display: flex; gap: 6px; align-items: center; }
+.open {
+  font: 600 14px var(--font); text-decoration: none; color: #FFFFFF; background: var(--teal); padding: 8px 14px; border-radius: 9px; white-space: nowrap;
+}
+.open:hover { filter: brightness(1.07); }
+.batch { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.batch[hidden] { display: none; }
+.batch-link {
+  font: 600 14px var(--font); text-decoration: none; color: #FFFFFF; padding: 10px 16px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal) 0%, #10C9A4 100%); box-shadow: 0 4px 12px rgba(0,170,173,.25);
+}
+.batch-link:hover { filter: brightness(1.08); }
+.batch-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.open:focus-visible, .swap:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.swap {
+  font: 400 12px var(--font); color: var(--muted); background: transparent; border: 0; border-bottom: 1px dashed var(--line);
+  padding: 1px 2px; margin-top: 2px; cursor: pointer; max-width: 100%;
+}
+.swap:hover { color: var(--teal-deep); border-bottom-color: var(--teal); }
+.swap option, .swap optgroup { color: var(--ink); background: var(--surface); }
+.empty { color: var(--muted); font-size: 14px; padding: 14px; border: 1px dashed var(--line); border-radius: 12px; text-align: center; }
+.example { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); font-size: 14px; padding: 10px 16px; border-radius: 10px; box-shadow: var(--shadow);
+}
+footer { font-size: 12px; color: var(--muted); text-align: center; }
+
+@media (max-width: 520px) {
+  .field { flex-direction: column; }
+  .carriers { grid-template-columns: 1fr; }
+  .row { grid-template-columns: auto 1fr; }
+  .actions { grid-column: 1 / -1; justify-content: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="logo"><img src="data:image/png;base64,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" alt="MyCloud Fulfillment"></span>
+    <span class="tag">ระบบเช็คพัสดุ · ทีม Customer Service</span>
+  </header>
+
+  <section class="hero">
+    <h1>วางเลขพัสดุ เช็คก่อนไปถามขนส่ง <span>ได้ที่นี่</span></h1>
+    <p>รวมขนส่งในประเทศและต่างประเทศไว้ที่เดียว ระบบเลือกขนส่งให้จากรูปแบบเลขพัสดุ หรือกดเลือกขนส่งเองได้</p>
+  </section>
+
+  <form class="console" id="form" autocomplete="off">
+    <div class="field">
+      <label for="q" hidden>เลขพัสดุ</label>
+      <textarea id="q" rows="1" spellcheck="false" placeholder="วางเลขพัสดุ เช่น EF582568151TH (วางหลายเลขได้ บรรทัดละเลข)"></textarea>
+      <button class="btn btn-go" type="submit" id="go">ค้นหา</button>
+    </div>
+    <div class="hint">
+      <span><kbd>Enter</kbd> เปิดหน้าผลทุกเลขพร้อมกัน</span>
+      <span><kbd>Shift</kbd>+<kbd>Enter</kbd> ขึ้นบรรทัดใหม่</span>
+    </div>
+    <div class="groups" id="groups"></div>
+  </form>
+
+  <section id="results-sec" hidden>
+    <div class="section-h"><h2>ผลการตรวจเลข</h2><span class="tag" id="count"></span></div>
+    <div class="batch" id="batch" hidden></div>
+    <div class="list" id="results"></div>
+  </section>
+
+  <section>
+    <div class="section-h"><h2>ค้นหาล่าสุด</h2><button class="link-btn" type="button" id="clear" hidden>ล้างประวัติ</button></div>
+    <div class="list" id="history"></div>
+  </section>
+
+  <footer>เปิดหน้าผลบนเว็บไซต์ของขนส่งโดยตรง · ประวัติเก็บเฉพาะในเบราว์เซอร์ของคุณ</footer>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const THPOST = 'https://track.thailandpost.co.th/';
+const DHLPORTAL = 'https://ecommerceportal.dhl.com/track/pages/customer/trackItNowPublic.xhtml?locale=th_TH';
+const TELEPORT = 'https://teleport.delivery/track';
+const DHLEXPRESS = 'https://www.dhl.com/th-th/home/tracking.html';
+const GROUPS = [
+  { key: 'domestic', label: 'Domestic', th: 'ในประเทศ' },
+  { key: 'intl', label: 'International', th: 'ต่างประเทศ' }
+];
+const CARRIERS = {
+  post: {
+    group: 'domestic', name: 'ไปรษณีย์ไทย', mark: 'ปณ', note: 'EMS · ลงทะเบียน · พัสดุ',
+    home: THPOST, url: n => THPOST + '?trackNumber=' + encodeURIComponent(n)
+  },
+  dhl: {
+    group: 'domestic', name: 'DHL eCommerce', mark: 'DHL', note: 'ติดตามได้สูงสุด 50 เลขต่อครั้ง',
+    home: DHLPORTAL, url: n => DHLPORTAL + '&ref=' + encodeURIComponent(n)
+  },
+  express: {
+    group: 'intl', name: 'DHL Express', mark: 'DHL', note: 'เลข waybill 10 หลัก · dhl.com',
+    home: DHLEXPRESS, url: n => DHLEXPRESS + '?submit=1&tracking-id=' + encodeURIComponent(n)
+  },
+  teleport: {
+    group: 'intl', name: 'Teleport', mark: 'TP', note: 'ติดตามได้สูงสุด 10 เลขต่อครั้ง',
+    home: TELEPORT, url: n => TELEPORT + '?tracking_number=' + encodeURIComponent(n)
+  },
+  epacket: {
+    group: 'intl', name: 'ePacket Plus / EMS World', mark: 'EMS', note: 'ผ่านหน้าไปรษณีย์ไทย',
+    home: THPOST, url: n => THPOST + '?trackNumber=' + encodeURIComponent(n)
+  }
+};
+// Sites that accept several numbers in one link (comma-separated); others open one number per link.
+const MULTI = {
+  post: { site: 'thpost', name: 'ไปรษณีย์ไทย', max: 10, url: ns => THPOST + '?trackNumber=' + encodeURIComponent(ns.join(',')) },
+  epacket: { site: 'thpost', name: 'ไปรษณีย์ไทย', max: 10, url: ns => THPOST + '?trackNumber=' + encodeURIComponent(ns.join(',')) },
+  dhl: { site: 'dhl', name: 'DHL eCommerce', max: 50, url: ns => DHLPORTAL + '&ref=' + encodeURIComponent(ns.join(',')) }
+};
+
+function batchLinks(items) {
+  const bySite = new Map();
+  items.forEach(it => {
+    const m = MULTI[it.c];
+    const key = m ? m.site : it.c + ':' + it.n;
+    if (!bySite.has(key)) bySite.set(key, { m, items: [] });
+    bySite.get(key).items.push(it);
+  });
+  const out = [];
+  bySite.forEach(({ m, items: list }) => {
+    if (!m) { out.push({ label: CARRIERS[list[0].c].name, items: list, href: CARRIERS[list[0].c].url(list[0].n) }); return; }
+    for (let i = 0; i < list.length; i += m.max) {
+      const chunk = list.slice(i, i + m.max);
+      out.push({ label: m.name, items: chunk, href: m.url(chunk.map(x => x.n)) });
+    }
+  });
+  return out;
+}
+
+// UPU S10 format (2 letters + 9 digits + 2-letter country) is handled by Thailand Post; everything else goes to DHL eCommerce.
+const S10 = /^[A-Z]{2}\d{9}[A-Z]{2}$/;
+const detect = n => S10.test(n) ? 'post' : 'dhl';
+const parse = text => [...new Set(text.toUpperCase().split(/[\s,;]+/).map(s => s.replace(/[^A-Z0-9-]/g, '')).filter(s => s.length >= 6))];
+
+const $ = id => document.getElementById(id);
+const q = $('q');
+const overrides = {};
+const HKEY = 'mct-history';
+
+function loadHistory() {
+  try { const v = JSON.parse(localStorage.getItem(HKEY)); return Array.isArray(v) ? v : null; } catch { return null; }
+}
+function saveHistory(h) { try { localStorage.setItem(HKEY, JSON.stringify(h)); } catch {} }
+let history = loadHistory();
+
+function remember(n, c) {
+  const h = (history || []).filter(x => x.n !== n);
+  h.unshift({ n, c, t: Date.now() });
+  history = h.slice(0, 10);
+  saveHistory(history);
+  renderHistory();
+}
+
+function ago(t) {
+  const s = Math.round((Date.now() - t) / 1000);
+  if (s < 60) return 'เมื่อสักครู่';
+  if (s < 3600) return Math.floor(s / 60) + ' นาทีที่แล้ว';
+  if (s < 86400) return Math.floor(s / 3600) + ' ชม. ที่แล้ว';
+  return new Date(t).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+}
+
+function row(n, c, meta, onSwap) {
+  const C = CARRIERS[c];
+  const el = document.createElement('div');
+  el.className = 'row';
+  el.innerHTML =
+    `<span class="mark ${c}">${C.mark}</span>` +
+    `<span class="num"></span>` +
+    `<span class="actions"><a class="open" target="_blank" rel="noopener">เปิดดูสถานะ ↗</a></span>`;
+  const num = el.querySelector('.num');
+  num.textContent = n;
+  const m = document.createElement('span'); m.className = 'meta';
+  if (onSwap) {
+    m.innerHTML = `<select class="swap" title="ขนส่งไม่ถูก? เลือกใหม่ได้ที่นี่">${carrierOptions(c)}</select>`;
+    m.firstChild.setAttribute('aria-label', 'ขนส่งของเลข ' + n);
+  } else m.textContent = meta;
+  num.append(m);
+  const a = el.querySelector('.open');
+  a.href = C.url(n);
+  a.addEventListener('click', () => remember(n, c));
+  if (onSwap) el.querySelector('.swap').addEventListener('change', e => onSwap(e.target.value));
+  return el;
+}
+
+function carrierOptions(selected) {
+  return GROUPS.map(g => `<optgroup label="${g.label}">` +
+    Object.entries(CARRIERS).filter(([, C]) => C.group === g.key)
+      .map(([k, C]) => `<option value="${k}"${k === selected ? ' selected' : ''}>${C.name}</option>`).join('') +
+    '</optgroup>').join('');
+}
+
+function renderResults() {
+  const nums = parse(q.value);
+  const box = $('results');
+  box.replaceChildren();
+  $('results-sec').hidden = nums.length === 0;
+  $('count').textContent = nums.length ? nums.length + ' เลข' : '';
+  const items = nums.map(n => ({ n, c: overrides[n] || detect(n) }));
+  items.forEach(({ n, c }) => {
+    box.append(row(n, c, CARRIERS[c].name, v => { overrides[n] = v; renderResults(); }));
+  });
+  renderBatch(items);
+  updateCarrierLinks(nums[0]);
+}
+
+function renderBatch(items) {
+  const links = items.length > 1 ? batchLinks(items) : [];
+  $('batch').hidden = links.length === 0;
+  $('batch').replaceChildren(...links.map(b => {
+    const a = document.createElement('a');
+    a.className = 'batch-link';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.href = b.href;
+    a.textContent = b.items.length > 1 ? `เปิด ${b.label} ทั้ง ${b.items.length} เลข ↗` : `เปิด ${b.label} · ${b.items[0].n} ↗`;
+    a.addEventListener('click', () => b.items.slice().reverse().forEach(x => remember(x.n, x.c)));
+    return a;
+  }));
+}
+
+function renderCarrierCards() {
+  $('groups').replaceChildren(...GROUPS.map(g => {
+    const sec = document.createElement('div');
+    sec.innerHTML = `<div class="group-h"><span class="pill">${g.label}</span><small>${g.th}</small></div><div class="carriers"></div>`;
+    Object.entries(CARRIERS).filter(([, C]) => C.group === g.key).forEach(([k, C]) => {
+      const a = document.createElement('a');
+      a.className = 'carrier'; a.id = 'c-' + k; a.target = '_blank'; a.rel = 'noopener'; a.href = C.home;
+      a.innerHTML = `<span class="mark ${k}">${C.mark}</span><span><b></b><small></small></span>`;
+      a.querySelector('b').textContent = C.name;
+      a.querySelector('small').textContent = C.note;
+      a.addEventListener('click', () => { const n = parse(q.value)[0]; if (n) remember(n, k); });
+      sec.querySelector('.carriers').append(a);
+    });
+    return sec;
+  }));
+}
+
+function updateCarrierLinks(n) {
+  Object.entries(CARRIERS).forEach(([k, C]) => { $('c-' + k).href = n ? C.url(n) : C.home; });
+}
+
+function renderHistory() {
+  const box = $('history');
+  box.replaceChildren();
+  const items = history && history.length ? history : null;
+  $('clear').hidden = !items;
+  if (!items) {
+    const p = document.createElement('div'); p.className = 'empty';
+    p.textContent = 'ยังไม่มีประวัติ เลขที่กดเปิดดูสถานะจะขึ้นที่นี่ (เก็บล่าสุด 10 เลข)';
+    box.append(p);
+    return;
+  }
+  items.forEach(x => box.append(row(x.n, x.c, CARRIERS[x.c].name + ' · ' + ago(x.t))));
+}
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.id); toast.id = setTimeout(() => t.hidden = true, 2600);
+}
+
+function openFirst() {
+  const batch = $('batch').querySelectorAll('.batch-link');
+  const first = batch[0] || $('results').querySelector('.open');
+  if (!first) { toast('กรุณาวางเลขพัสดุก่อนค้นหา'); q.focus(); return; }
+  first.click();
+  if (batch.length > 1) toast('มีหลายขนส่ง เปิดกลุ่มแรกแล้ว กดปุ่มสีเขียวที่เหลือในผลการตรวจเลขเพื่อเปิดกลุ่มอื่น');
+}
+
+q.addEventListener('input', () => {
+  q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight + 4, 240) + 'px';
+  renderResults();
+});
+q.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); openFirst(); }
+});
+$('form').addEventListener('submit', e => { e.preventDefault(); openFirst(); });
+$('clear').addEventListener('click', () => { history = []; saveHistory(history); renderHistory(); toast('ล้างประวัติแล้ว'); });
+
+renderCarrierCards();
+renderHistory();
+renderResults();
+q.focus();
+</script>
+</body></html>
